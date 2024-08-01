@@ -1,0 +1,216 @@
+{% load static %}
+{% load arabic_days %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/fontawesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/all.min.css" %}">
+    <link rel="stylesheet" href=" {% static "css/style.css" %} ">
+
+    <title>profits page</title>
+</head>
+<body>
+    <div class="maincon">
+        <div class="window" id="windowcon">
+            <i id="closedetwin" class="fa-solid fa-xmark close" ></i>
+            <div id="detailcontainer">
+                
+            </div>
+        </div>
+        <div class="rightcon">
+            <div class="minhead">
+                <img src=" {% static "images/gym.png" %} " alt="">
+            </div>
+            <ul>
+                <i class="fa-solid fa-arrow-left" id="rightconexpend"></i>
+                <a href="{% url "home" %}">
+                    <li>
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>الرئيسية</span>
+                    </li>
+                </a>
+                <a href="{% url "products" %}">
+                    <li>
+                        <i class="fa-solid fa-file-export"></i>
+                        <span>المبيعات</span>
+                    </li>
+                </a>
+                <a href="{% url "clients" %}">
+                    <li>
+                        <i class="fa-solid fa-users"></i>
+                        <span>العملاء</span>
+                    </li>
+                </a>
+                <a href="{% url "profits" %}">
+                    <li class="activeli">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <span>المصروفات</span>
+                    </li>
+                </a>
+                {% if user.first_name == 'adminName' %}
+                <a href="{% url "adminPage" %}">
+                    <li>
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>المسئول</span>
+                    </li>
+                </a>
+                {% endif %}
+            </ul>
+            <div class="minfoot">
+                <a href="{% url "logout" %}">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+                <span>user</span>
+            </div>
+        </div>
+        <div class="leftcon">
+            <div class="status">
+                <h2>المصروفات</h2>
+                <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                    {% csrf_token %}
+                    <div class="addsell" style="padding-top: 70px;">
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='lose'  type="text" id="search_bar" class="search_bar" required >
+                                <span>نوع المصروف</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='paid_money' step="0.1" type="number" id="search_bar" class="search_bar" min="0" required >
+                                <span>المدفوع</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='date' type="date" id="search_bar" class="search_bar" required >
+                                <span>التاريخ</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button name="addpay" class="sellbtn">اضافة مصروف</button>
+                </form>
+            </div>
+            <div class="status">
+                <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% csrf_token %}
+                    <div class="addsell">
+                        <div class="wraper">
+                            <div class="first">
+                                <input  name="searchInput" value="{{request.POST.searchInput}}" type="text" id="search_bar" class="search_bar" required >
+                                <span>بحث </span>
+                            </div>
+                            <div class="search_res" id="search_res">
+                                <table id="suplliersull">
+                                    <th></th>
+                                    <tbody id="suplliersul">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button name="search" class="sellbtn" style="width: 40px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <a href="{% url "profits" %}" class="sellbtn" style="width: 40px; text-align:center;"><i class="fa-solid fa-arrows-rotate"></i></a>
+                    </div>
+                </form> 
+                {% if pays %}
+
+                <table class="sellstable">
+                    <thead>
+                        <tr>
+                            <th>نوع المصروف</th>
+                            <th>المدفوع</th>
+                            <th>اليوم</th>
+                            <th>التاريخ</th>
+                            {% if user.first_name == "شبه مسئول" or user.first_name == 'adminName' %}
+                            <th>حذف</th>
+                            {% endif %}
+                            {% if user.first_name == "شبه مسئول" or user.first_name == "مستخدم متقدم" or user.first_name == 'adminName' %}
+                            <th>تعديل</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pay in pays %}
+                        <tr>
+                            <td>{{pay.lose}}</td>
+                            <td>{{pay.paid_money}}</td>
+                            <td>{{pay.date|date:"w"|arabic_days}}</td>
+                            <td>{{pay.date|date:"20y/m/d"}}</td>
+                            {% if user.first_name == "شبه مسئول" or user.first_name == 'adminName' %}
+                            <td><button class="sellsdel" id="sellsdel" metadata='
+                                <form method="post" action="{% url "paydelete" pay.id %}" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                                    {% csrf_token %}
+                                    <div class="addsell" style="padding: 20px;flex-direction:column;">
+                                        <h3 style="color:#3D4B64;">حذف دفع</h3>
+                                        <h3 style="color:#FF0000;">"حذف الدفع سيؤدى الى حذف جميع المتعلقات بها"</h3>
+                                        <br>
+                                        <i class="fa-regular fa-trash-can" style="color: #ff3333;font-size: 100px;"></i>
+                                        <br>
+                                    </div>
+                                    <button name="paydelete" class="sellbtn">حذف</button>
+                                </form>
+                                '><i class="fa-solid fa-trash-can"></i></button></td>
+                                {% endif %}
+                                {% if user.first_name == "شبه مسئول" or user.first_name == "مستخدم متقدم" or user.first_name == 'adminName' %}
+                                <td><button class="sellsup" id="sellsup" metadata='
+                                    <form method="post" action="{% url "payupdate" pay.id %}" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                                        {% csrf_token %}
+                                    <h3 style="color:#3D4B64;">تعديل دفع</h3>
+                                    <div class="addsell" style="padding-top: 70px;">
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input value="{{pay.lose}}" name="lose"  type="text" id="search_bar" class="search_bar" required >
+                                                <span>نوع المصروف</span>
+                                            </div>
+                                        </div>
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input value="{{pay.paid_money}}" min="0" name="paid_money" type="number" id="search_bar" class="search_bar" required>
+                                                <span>المدفوع</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name="payupdate" class="sellbtn">تعديل</button>
+                                </form>
+                                '><i class="fa-solid fa-pencil"></i></button></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="btnnav">
+                        <div>
+                            {% if pays.has_previous %}
+                            <a href="?page=1"><i class="fa-solid fa-angles-right"></i></a>
+                            <a href="?page={{ pays.previous_page_number }}"><i class="fa-solid fa-chevron-right"></i></a>
+                            {% endif %}
+                            <p>صفحة {{ pays.number }} من {{ pays.paginator.num_pages }}</p>
+                        </div>
+                        <div>
+                            {% if pays.has_next %}
+                            <a href="?page={{ pays.next_page_number }}"><i class="fa-solid fa-chevron-left"></i></a>
+                            <a href="?page={{ pays.paginator.num_pages }}"><i class="fa-solid fa-angles-left"></i></a>
+                            {% endif %}
+    
+                        </div>
+                    </div>
+                    {% else %}
+                <h1>لا يوجد مصروفات</h1>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src=" {% static "js/select.js" %} "></script>
+    <script src=" {% static "js/main.js" %} "></script>
+</body>
+</html>

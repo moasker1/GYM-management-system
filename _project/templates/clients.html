@@ -1,0 +1,309 @@
+{% load static %}
+{% load arabic_numbers %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=" {% static "css/style.css" %} ">
+    <link rel="stylesheet" href="{% static "css/fontawesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/all.min.css" %}">
+    <title>clients page</title>
+</head>
+<body>
+    <div class="maincon">
+
+        <div class="window" id="windowcon">
+            <i id="closedetwin" class="fa-solid fa-xmark close" ></i>
+            <div id="detailcontainer">
+                
+            </div>
+        </div>
+        <div class="rightcon">
+            <div class="minhead">
+                <img src=" {% static "images/gym.png" %} " alt="">
+            </div>
+                    <ul>
+                        <i class="fa-solid fa-arrow-left" id="rightconexpend"></i>
+                        <a href="{% url "home" %}">
+                            <li>
+                                <i class="fa-solid fa-house-circle-check"></i>
+                                <span>الرئيسية</span>
+                            </li>
+                        </a>
+                        <a href="{% url "products" %}">
+                            <li>
+                                <i class="fa-solid fa-file-export"></i>
+                                <span>المبيعات</span>
+                            </li>
+                        </a>
+
+                        <a href="{% url "clients" %}">
+                            <li  class="activeli">
+                                <i class="fa-solid fa-users"></i>
+                                <span>العملاء</span>
+                            </li>
+                        </a>
+                        <a href="{% url "profits" %}">
+                            <li  class="">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                                <span>المصروفات</span>
+                            </li>
+                        </a>
+                        {% if user.first_name == 'adminName' %}
+                        <a href="{% url "adminPage" %}">
+                            <li>
+                                <i class="fa-solid fa-user-tie"></i>
+                                <span>المسئول</span>
+                            </li>
+                        </a>
+                        {% endif %}
+                    </ul>
+            <div class="minfoot">
+                <a href="{% url "logout" %}">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+                <span>user</span>
+            </div>
+        </div>
+        
+        <div class="leftcon">
+            <div class="status">
+                
+                <h2>المشتركين</h2>
+                
+
+                <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                    {% csrf_token %}
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <br>
+                    <div class="addsell">
+                        
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='name' type="text" id="search_bar" class="search_bar" required >
+                                <span>اسم العميل</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='date' type="date" id="search_bar" class="search_bar" required >
+                                <span>تاريخ الاشتراك</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='opening_balance' min="1" type="number" id="search_bar" class="search_bar" value="0" required >
+                                <span>المبلغ المدفوع</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='phone' type="number" id="search_bar" class="search_bar" >
+                                <span>رقم الهاتف</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='notes' type="text" id="search_bar" class="search_bar"  >
+                                <span>ملاحظات</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button name="addClient" class="sellbtn">اضافة عميل</button>
+                </form>
+
+
+            </div>
+            <div class="status">
+                <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                    {% csrf_token %}
+                    <div class="addsell">
+                        <div class="wraper">
+                            <div class="first">
+                                <input name="searchInput" value="{{ request.POST.searchInput }}" type="text" id="search_bar" class="search_bar" required>
+                                <span>بحث باسم العميل</span>
+                            </div>
+                            <div class="search_res" id="search_res">
+                                <table id="suplliersull">
+                                    <th></th>
+                                    <tbody id="suplliersul">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <button name="search" class="sellbtn" style="width: 40px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                        <a href="{% url "clients" %}" class="sellbtn" style="width: 40px; text-align:center;"><i class="fa-solid fa-arrows-rotate"></i></a>
+                    </div>
+                </form>
+                
+                <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: row;">
+                    {% csrf_token %}
+                    <button name="active" class="sellbtn" style="width: 100px;background-color:#089508;margin-left:10px;"> فعال</button>
+                    <button name="noactive" class="sellbtn" style="width: 100px;background-color:#cd0404;">غير فعال</button>
+                </form>
+
+                {% if clients %}
+                <table class="sellstable">
+                    <thead>
+                        <tr>
+                            <th>الكود</th>
+                            <th>اسم العميل</th>
+                            <th>المبلغ</th>
+                            <th>تاريخ الاشتراك</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>رقم الهاتف</th>
+                            <th>ملاحظات</th>
+                            <th>تجديد</th>
+                            {% if user.first_name == "شبه مسئول" or user.first_name == 'adminName' %}
+                            <th>حذف</th>
+                            {% endif %}
+                            {% if user.first_name == "شبه مسئول" or user.first_name == "مستخدم متقدم" or user.first_name == 'adminName' %}
+                            <th>تعديل</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    {% for client in clients %}
+                    <tbody>
+                        <tr>
+                            <td>{{client.id}}</td>
+                            <td>{{client.name}}</td>
+                            <td>{{client.opening_balance|floatformat:2}}</td>
+                            <td style="width:110px;">{{ client.date|custom_date }}</td>
+                            {% with client.date|add_days:30 as expiration_date %}
+                            <td style="width:110px;">{{ expiration_date|custom_date }}</td>
+                            {% endwith %}
+
+                            <td>{{client.phone}}</td>
+
+                            {% comment %} notes {% endcomment %}
+                            <td style="width: 20px;">
+                                <p id="sellsdel" metadata='
+                                <form style="width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; background-color: #221F3A; padding: 20px;">
+                                    <div class="addsell" style="padding: 20px; flex-direction: column;">
+                                        <h3 style="color: #fff;">الملاحظات</h3>
+                                        <h3 style="color: #fff;">{{client.notes}}</h3>
+                                    </div>
+                                </form>
+                                '>{{client.notes}}</p>
+                            </td>
+                            {% comment %} renew {% endcomment %}
+                            {% if user.first_name == "شبه مسئول" or user.first_name == "مستخدم متقدم" or user.first_name == 'adminName' %}
+                            <td><button style="color:#fff; background:#0054C8;padding:3px;border-radius:10px" class="sellsdel" id="sellsdel" metadata='
+                                <form method="post" action="{% url "renew" client.id %}" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column; background-color:#221F3A; padding :20px;">
+                                    {% csrf_token %}
+                                    <div class="addsell" style="padding: 20px;flex-direction:column;">
+                                        <h3 style="font-size:20px;color:#1AA9E9;"> طلب تجديــــد اشتراك</h3>
+                                        <h3 style="font-size:30px;color:#fff;">هل تريد تجديد اشتراك العميل "{{client.name}}" للشهر الحالي</h3>
+                                    </div>
+                                    <button name="renew" class="sellbtn">تجديد</button>
+                                </form>
+                                '>تجديد</button></td>
+                                {% endif %}
+
+
+                                {% comment %} delete {% endcomment %}
+                                {% if user.first_name == "شبه مسئول" or user.first_name == 'adminName' %}
+                                <td><button class="sellsdel" id="sellsdel" metadata='
+                                <form method="post" action="{% url "clientDelete" client.id %}" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column; background-color:#221F3A; padding :20px;">
+                                    {% csrf_token %}
+                                    <div class="addsell" style="padding: 20px;flex-direction:column;">
+                                        <h3 style="color:#fff;">حذف عميل</h3>
+                                        <h3 style="color:#FF0000;">"حذف العميل سيؤدى الى حذف جميع المتعلقات به"</h3>
+                                        <br>
+                                        <i class="fa-regular fa-trash-can" style="color: #ff3333;font-size: 100px;"></i>
+                                        <br>
+                                    </div>
+                                    <button name="clientDelete" class="sellbtn">حذف</button>
+                                </form>
+                                '><i class="fa-solid fa-trash-can"></i></button></td>
+                                {% endif %}
+                                {% comment %} update {% endcomment %}
+                                {% if user.first_name == "شبه مسئول" or user.first_name == "مستخدم متقدم" or user.first_name == 'adminName' %}
+                                <td><button class="sellsup" id="sellsup" metadata='
+                                    <form method="post" action="{% url "clientUpdate" client.id %}" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column; background-color:#221F3A; padding:20px;">
+                                        {% csrf_token %}
+                                        <h3 style="color:#fff;">تعديل عميل</h3>
+                                    <div class="addsell" style="padding-top: 70px;">
+                                        <div class="wraper" style="position: absolute;  left: 35%; top: 20%;z-index: 15; background-color:##1B192E;">
+                                            <div class="first">
+                                                <input value="{{client.name}}" name="name" type="text" id="search_bar" class="search_bar" required >
+                                                <span>اسم العميل</span>
+                                            </div>
+                                            <div class="search_res" id="search_res">
+                                                <table id="suplliersull">
+                                                    <th></th>
+                                                    <tbody id="suplliersul">
+                                                        <tr><td>mohamed abdelghany</td></tr>
+                                                        <tr><td>mohamed asker</td></tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input name= "notes" value="{{client.notes}}" type="text" id="search_bar" class="search_bar" >
+                                                <span>ملاحظات</span>
+                                            </div>
+                                        </div>
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input name= "phone" value="{{client.phone}}" type="number" id="search_bar" class="search_bar" >
+                                                <span>الهاتف</span>
+                                            </div>
+                                        </div>
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input name= "opening_balance" min="0" value="{{client.opening_balance}}" type="number" id="search_bar" class="search_bar" >
+                                                <span>المبلغ</span>
+                                            </div>
+                                        </div>
+                                        <div class="wraper" style="width: 20%;">
+                                            <div class="second">
+                                                <input name= "date" value="{{client.date|date:"Y-m-d"}}" type="date" id="search_bar" class="search_bar" >
+                                                <span>تاريخ الاشتراك</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button name= "clientUpdate" class="sellbtn">تعديل</button>
+                                </form>
+                                '><i class="fa-solid fa-pencil"></i></button></td>
+                                {% endif %}
+                            </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+                <div class="btnnav">
+                    <div>
+                        {% if clients.has_previous %}
+                        <a href="?page=1"><i class="fa-solid fa-angles-right"></i></a>
+                        <a href="?page={{ clients.previous_page_number }}"><i class="fa-solid fa-chevron-right"></i></a>
+                        {% endif %}
+                        <p>صفحة {{ clients.number }} من {{ clients.paginator.num_pages }}</p>
+                    </div>
+                    <div>
+                        {% if clients.has_next %}
+                        <a href="?page={{ clients.next_page_number }}"><i class="fa-solid fa-chevron-left"></i></a>
+                        <a href="?page={{ clients.paginator.num_pages }}"><i class="fa-solid fa-angles-left"></i></a>
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% else %}
+                <h1>لا يوجد عملاء</h1>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src=" {% static "js/select.js" %} "></script>
+    <script src=" {% static "js/main.js" %} "></script>
+</body>
+</html>

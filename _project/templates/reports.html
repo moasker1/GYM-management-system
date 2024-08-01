@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=" {% static "css/style.css" %} ">
+    <link rel="stylesheet" href="{% static "css/fontawesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/all.min.css" %}">
+
+    <title>reports</title>
+</head>
+<body>
+    <div class="maincon">
+        <div class="rightcon">
+            <div class="minhead">
+                <img src=" {% static "images/gym.png" %} " alt="">
+            </div>
+            <ul>
+                <i class="fa-solid fa-arrow-left" id="rightconexpend"></i>
+                <a href="{% url "home" %}">
+                    <li>
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>الصفحة الرئيسية</span>
+                    </li>
+                </a>
+                {% if user.first_name == 'adminName' %}
+                <a href="{% url "adminPage" %}">
+                    <li>
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>المسئول</span>
+                    </li>
+                </a>
+                {% endif %}
+                {% if user.first_name == 'adminName' %}
+                <a href="{% url "reports" %}">
+                    <li class="activeli">
+                        <i class="fa-regular fa-paste"></i>
+                        <span>التقارير</span>
+                    </li>
+                </a>
+                {% endif %}
+            </ul>
+            <div class="minfoot">
+                <a href="{% url "logout" %}">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+                <span>{{user.username}}</span>
+            </div>
+        </div>
+        <div class="leftcon">
+            <div class="status">
+                <form method="post" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                        <h2>التقارير</h2>
+                        {% csrf_token %}
+                        <div class="wraper" style="width: 20%; margin-top: 15px;">
+                            <div class="second">
+                                <input type="date" id="date" class="search_bar" name="date" required>
+                                <span>التاريخ</span>
+                            </div>
+                        </div>
+                        <br>
+                        <button name="reportsShow" type="submit" class="sellbtn" >عرض التقارير</button>
+                </form>
+                {% if recent_actions %}
+                <br>
+                <h2 style="direction:rtl;">تقارير يوم :  {{selected_date|date:"20y/m/d"}} </h2>
+                <table class="sellstable">
+                    <thead>
+                        <tr>
+                            <th>النوع</th>
+                            <th>المستخدم</th>
+                            <th>التفاصيل</th>
+                            <th>الوقت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for action in recent_actions %}
+                        <tr>
+                            <td>{{action.action_type}}</td>
+                            <td>{{action.user}}</td>
+                            <td>{{action.model_affected}}</td>
+                            <td>{{action.timestamp|time}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <br>
+                <br>
+                <br>
+                <h1>لم يتم العثور على تقارير لهذا اليوم , اختر تاريخ صحيح</h1>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        //right container menu size funcion 
+        const rightconexpend = document.getElementById('rightconexpend')
+        const rightcon = document.querySelector('.rightcon')
+        rightconexpend.addEventListener('click',()=>{
+        rightcon.classList.toggle( "active" );
+        });
+        // Get all date input elements
+        const dateInput = document.getElementById('date');
+        // Get today's date
+        const today = new Date();
+        // Loop through each input and set its value to today's date
+            dateInput.value = today.toISOString().split('T')[0];
+    </script>
+</body>
+</html> 

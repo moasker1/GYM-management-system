@@ -1,0 +1,55 @@
+{% load static %}
+{% load arabic_days %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/home.css" %}">
+    <link rel="stylesheet" href="{% static "css/fontawesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/all.min.css" %}">
+
+    <title>Home page</title>
+</head>
+<body>
+    <div class="maincon">
+        <div class="leftcon">
+            <div class="status">
+                <img src="{% static "images/gym.png" %}" alt="">
+                <img src="{% static "images/santalogo.png" %}" alt="">
+                <h1>Santa Soft</h1>
+                <span>for programming services</span>
+                <div class="links">
+                    <a href="{% url "clients" %}">
+                        <div class="card">
+                            <i class="fa-solid fa-users"></i>
+                            <h2>المشتركين</h2>
+                        </div>
+                    </a>
+                    {% if user.first_name == 'adminName' %}
+                    <a href="{% url "products" %}">
+                        <div class="card">
+                            <i class="fa-solid fa-file-export"></i>
+                            <h2>المبيعات</h2>
+                        </div>
+                    </a>
+                    <a href="{% url "profits" %}">
+                        <div class="card">
+                            <i class="fa-solid fa-hand-holding-dollar"></i>
+                            <h2>المصروفات</h2>
+                        </div>
+                    </a>
+                    <a href="{% url "adminPage" %}">
+                        <div class="card">
+                            <i class="fa-solid fa-user-tie"></i>
+                            <h2>صفحة الأدمن</h2>
+                        </div>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static "js/connection.js" %}"></script>
+</body>
+</html>

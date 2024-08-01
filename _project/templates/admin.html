@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "css/fontawesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/all.min.css" %}">
+        <link rel="stylesheet" href=" {% static "css/style.css" %} ">
+
+    <title>admin page</title>
+</head>
+<body>
+    <div class="maincon">
+        <div class="zwraper">
+            <div class="toast">
+                <div class="content">
+                    <div class="icon"><i class="fa-solid fa-wifi"></i></div>
+                    <div class="details">
+                        <span>you are online now</span>
+                        <p>Your internet connection is working perfectly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="window" id="windowcon">
+            <i id="closedetwin" class="fa-solid fa-xmark close" ></i>
+            <div id="detailcontainer">
+                
+            </div>
+        </div>
+        <div class="rightcon">
+            <div class="minhead">
+                <img src=" {% static "images/gym.png" %} " alt="">
+            </div>
+            <ul>
+                <i class="fa-solid fa-arrow-left" id="rightconexpend"></i>
+                <a href="{% url "home" %}">
+                    <li>
+                        <i class="fa-solid fa-house-circle-check"></i>
+                        <span>الرئيسية</span>
+                    </li>
+                </a>
+                <a href="{% url "clients" %}">
+                    <li>
+                        <i class="fa-solid fa-users"></i>
+                        <span>العملاء</span>
+                    </li>
+                </a>
+                <a href="{% url "adminPage" %}">
+                    <li class="activeli">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>المسئول</span>
+                    </li>
+                </a>
+                <a href="{% url "reports" %}">
+                    <li>
+                        <i class="fa-regular fa-paste"></i>
+                        <span>التقارير</span>
+                    </li>
+                </a>
+
+            </ul>
+            <div class="minfoot">
+                <a href="{% url "logout" %}">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </a>
+                <span>user</span>
+            </div>
+        </div>
+        
+        <div class="leftcon">
+            <div class="status">
+                    <h2>احصائيات</h2><br>
+                    <div class="statuscon">
+                        
+                        <div>
+                            <h3>عدد المشتركين</h3>
+                            <h2><span>{{clients_number}}</span> مشترك</h2>
+                        </div>
+                        <div>
+                            <h3>المشتركين الفعالين</h3>
+                            <h2><span>{{clients_per_month}}</span> مشترك</h2>
+                        </div>
+
+                        <div>
+                            <h3>اجمالي الاشتراكات</h3>
+                            <h2><span>{{total_money}}</span> جنيه</h2>
+                        </div>
+
+                        <div>
+                            <h3>اشتراكات الشهر الحالي</h3>
+                            <h2><span>{{total_money_per_month}}</span> جنيه</h2>
+                        </div>
+
+                        
+                        <div>
+                            <h3>عدد المنتجات</h3>
+                            <h2><span>{{pro_number}}</span> منتج</h2>
+                        </div>
+                        <div>
+                            <h3>قيمة المنتجات</h3>
+                            <h2><span>{{total_prod_value}}</span> جنيه</h2>
+                        </div>
+                        
+                        <div>
+                            <h3> مصروفات الشهر الحالي</h3>
+                            <h2><span>{{loses_month}}</span> جنيه</h2>
+                        </div>
+                    </div>
+                    <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;margin-bottom:50px;">
+                        <h2>كشف حساب مصروفات</h2>
+                        {% csrf_token %}
+                        <div class="addsell">
+                            <div class="wraper">
+                                <div class="first">
+                                    <input name="date" type="month" id="search_bar" class="search_bar" required>
+                                </div>
+                            </div>
+                            <button type="submit" name="search" class="sellbtn" style="width: 40px;"><i class="fa-solid fa-magnifying-glass"></i></button>
+                            <a href="{% url "adminPage" %}" class="sellbtn" style="width: 40px; text-align:center;"><i class="fa-solid fa-arrows-rotate"></i></a>
+                            <input type="text" value="{{ total_expenses }} جنيه  " class="expense" readonly>
+                        </div>
+                    </form>
+                                        
+                    <form method="post" action="" style="width: 100%;display: flex;align-items: center;justify-content: center;flex-direction: column;">
+                        <h2 style="margin-bottom:10px;">المستخدمين</h2>
+                    {% csrf_token %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="addsell" >
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='username' type="text" id="search_bar" class="search_bar" required>
+                                <span>اسم المستخدم</span>
+                            </div>
+                        </div>
+                        <div class="wraper" style="width: 20%;">
+                            <div class="second">
+                                <input name='password' type="text" id="search_bar" class="search_bar" required>
+                                <span>كلمه المرور</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wraper">
+                        <div class="first">
+                            <select name="firstname" id="" class="select" required>
+                                <option value=""></option>
+                                <option value="شبه مسئول">شبه مسئول</option>
+                                <option value="مستخدم متقدم">مستخدم متقدم</option>
+                                <option value="مستخدم عادي">مستخدم</option>
+                                    </select>
+                            <span>الصلاحية</span>
+                        </div>
+                    </div>
+                    <br>
+                    <button name="addUser" class="sellbtn">اضافة</button>
+                </form>
+            </div>
+            <div class="status">
+                <table class="sellstable">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>الصلاحية</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{user.username}}</td>
+                            <td>{{user.first_name}}</td>
+                            {% if user.first_name != "adminName" %}
+                            <td><a href="{% url "userdelete" id=user.id %}">delete</a></td>
+                                {% else %}
+                                <td></td>
+                                {% endif %}    
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src=" {% static "js/admin.js" %} "></script>
+    <script src=" {% static "js/connection.js" %} "></script>
+    <script src=" {% static "js/select.js" %} "></script>
+    <script src=" {% static "js/main.js" %} "></script>
+
+</body>
+</html> 
